@@ -5,6 +5,9 @@
 
 <br>
 
+![img](https://img.shields.io/github/release/anotherpillow/sdvconvertergui2.svg)
+![img](https://img.shields.io/github/downloads/anotherpillow/sdvconvertergui2/total.svg)
+
 A rewritten GUI for popular Stardew Valley converters.
 
 ## Installation
