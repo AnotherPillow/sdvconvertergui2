@@ -5,9 +5,6 @@
 
 <br>
 
-![img](https://img.shields.io/github/release/anotherpillow/sdvconvertergui2.svg)
-![img](https://img.shields.io/github/downloads/anotherpillow/sdvconvertergui2/total.svg)
-
 A rewritten GUI for popular Stardew Valley converters.
 
 ## Installation
@@ -16,7 +13,7 @@ It's a portable application (as of now) - there's no installer.
 
 ## Usage
 
-1. Download the latest release from [the releases page](https://github.com/AnotherPillow/sdvconvertergui2).
+1. Download the latest release from [the NexusMods page](https://www.nexusmods.com/stardewvalley/mods/20986?tab=files).
 2. Run the downloaded file.
 3. Choose a converter and select a `manifest.json` (that works with the converter)
 4. Press the convert button and wait for it to complete.
