@@ -1,0 +1,7 @@
+build/bin/
+node_modules/
+frontend/dist
+
+vite.config.js.timestamp*
+testmods/
+test.go
