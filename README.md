@@ -35,7 +35,7 @@ I could not find portable Python and Git releases for them.
 ## Attribution
 
 All converters are used with permission, and the original authors can be found above.
-
+The main background image is used with permission from [Custom Menu Background](https://www.nexusmods.com/stardewvalley/mods/7416).
 
 ## Images
 
