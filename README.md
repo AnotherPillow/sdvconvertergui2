@@ -30,7 +30,6 @@ I could not find portable Python and Git releases for them.
 - [CM2CP](https://github.com/AnotherPillow/CM2CP) by AnotherPillow
 - [STF2CP](https://github.com/AnotherPillow/STF2CP) by AnotherPillow
 - [FurnitureConverter](https://github.com/elizabethcd/FurnitureConverter) by elizabethcd
-- [SkirtConverter](https://github.com/elizabethcd/SkirtConverter) by elizabethcd
 - [CP2AT](https://github.com/holy-the-sea/CP2AT) by holy-the-sea
 
 ## Attribution
