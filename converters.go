@@ -36,7 +36,7 @@ func (c Converter) ModifyConfig(configPath string) {
 			getGameInstallDirectory(), "\\", "\\\\")))
 		os.WriteFile(configPath, bytes, 0644)
 	} else if c.Name == "CP2AT" {
-		var bytes = []byte(`{"mod_folder_path": "input","keywords": [""]}, "output_folder_path": "output"`)
+		var bytes = []byte(`{"mod_folder_path": "input","keywords": [""], "output_folder_path": "output"}`)
 		os.WriteFile(configPath, bytes, 0644)
 	}
 }
