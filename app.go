@@ -4,7 +4,6 @@ import (
 	"bufio"
 	"context"
 	"fmt"
-	"log"
 	"os"
 	"path/filepath"
 	"strings"
@@ -30,23 +29,40 @@ func (a *App) startup(ctx context.Context) {
 	a.ctx = ctx
 }
 
-// Greet returns a greeting for the given name
-func (a *App) Greet(name string) string {
-	return fmt.Sprintf("Hello %s, It's show time!", name)
-}
-
 func (a *App) DomReady(ctx context.Context) {
+	debugLog("Dom ready!")
 	runtime.EventsEmit(ctx, "AVAILABLE_CONVERTERS", ConvertersMap)
 	runtime.EventsEmit(ctx, "DOM_READY", map[string]interface{}{
-		"a":    "b",
 		"game": getGameInstallDirectory(),
+	})
+
+	var updateState, updateMessage = checkForUpdate(a)
+	var updateType = ""
+
+	debugLog(fmt.Sprintf("Updatestate: %s, updatemessage: %s", updateState, updateMessage))
+
+	if updateState == 0 {
+		updateType = "none"
+	} else if updateState == 1 {
+		updateType = "available"
+	} else {
+		updateType = "error"
+	}
+
+	var emitData = map[string]interface{}{
+		"state":   updateType,
+		"message": updateMessage,
+	}
+
+	runtime.EventsEmit(ctx, "UPDATE_CHECK_INFO", map[string]interface{}{
+		"data": emitData,
 	})
 }
 
 func (a *App) ChooseManifest() map[string]interface{} {
 	filename, err := dialog.File().Filter("Mod Manifest (manifest.json)", "json").Title("Choose Input Content Pack manifest.json").Load()
 	if err != nil {
-		println("failed to select file")
+		debugLog("failed to select file")
 		return map[string]interface{}{
 			"filename": nil,
 			"content":  nil,
@@ -54,7 +70,7 @@ func (a *App) ChooseManifest() map[string]interface{} {
 	}
 	manifest, err := os.ReadFile(filename)
 	if err != nil {
-		println("failed to os.ReadFile")
+		debugLog("failed to os.ReadFile")
 		return map[string]interface{}{
 			"filename": nil,
 			"content":  nil,
@@ -79,7 +95,7 @@ func (a *App) ConvertMod(manifest map[string]interface{}, converterName string, 
 	var downloadDirName = fmt.Sprintf("%s_%s", converter.Name, randomString(5))
 	var downloadDir = filepath.Join(localFilesRootDirectory, downloadDirName)
 
-	println(converter.GitFile)
+	debugLog(converter.GitFile)
 	runtime.EventsEmit(a.ctx, "OUTPUT_CONVERTER_TEXT", fmt.Sprintf("[GUI] Cloning %s", converter.Name))
 
 	var gitCloneCmd = runSimpleCommand(fmt.Sprintf(
@@ -100,6 +116,7 @@ func (a *App) ConvertMod(manifest map[string]interface{}, converterName string, 
 
 	err := updatePackageResolution(filepath.Join(downloadDir, converter.MainFile))
 	if err != nil {
+		debugLog(fmt.Sprintf("failed to update package resolution %s", err.Error()))
 
 		return fmt.Sprintf("error|Failed change directory with error %s", err.Error())
 	}
@@ -114,23 +131,21 @@ func (a *App) ConvertMod(manifest map[string]interface{}, converterName string, 
 		"& \"%s\" -m pip install -r \"%s\"", pyExecutable, filepath.Join(downloadDir, converter.RequirementsFile),
 	))
 
-	println(fmt.Sprintf(
-		"& \"%s\" -m pip install -r \"%s\"", pyExecutable, filepath.Join(downloadDir, converter.RequirementsFile),
-	))
-
 	reqsStdout, err := reqsCmd.StdoutPipe()
 	if err != nil {
-		log.Printf("Error creating stdout pipe: %v\n", err)
+		debugLog(fmt.Sprintf("Error creating stdout pipe: %v\n", err))
 	}
 
 	if err := reqsCmd.Start(); err != nil {
-		return "error|Dependencies installation failed to start with error " + err.Error()
+		var r = "error|Dependencies installation failed to start with error " + err.Error()
+		debugLog(r)
+		return r
 	}
 
 	reqsScanner := bufio.NewScanner(reqsStdout)
 
 	for reqsScanner.Scan() {
-		log.Println(reqsScanner.Text())
+		debugLog(reqsScanner.Text())
 		if strings.Contains(reqsScanner.Text(), "Successfully installed") {
 			runtime.EventsEmit(a.ctx, "OUTPUT_CONVERTER_TEXT", "[GUI] "+reqsScanner.Text())
 		}
@@ -139,7 +154,10 @@ func (a *App) ConvertMod(manifest map[string]interface{}, converterName string, 
 	converter.ModifyConfig(filepath.Join(downloadDir, "config.json"))
 
 	if err := reqsCmd.Wait(); err != nil {
-		return "error|Dependencies installation completed with error " + err.Error()
+		var r = "error|Dependencies installation completed with error " + err.Error()
+		debugLog(fmt.Sprintf("Failed to install dependencies %v // %s", err, err.Error()))
+		debugLog(r)
+		return r
 	}
 
 	runtime.EventsEmit(a.ctx, "OUTPUT_CONVERTER_TEXT", fmt.Sprintf("[GUI] Running %s", converter.Name))
@@ -150,50 +168,56 @@ func (a *App) ConvertMod(manifest map[string]interface{}, converterName string, 
 		return fmt.Sprintf("error|Failed change directory with error %s", err.Error())
 	}
 
-	println(os.Getwd())
+	wd, wde := os.Getwd()
+	debugLog(fmt.Sprintf("PWD: %s - possible err %s", wd, wde))
 
 	var mainRunCmd = runSimpleCommand(fmt.Sprintf(
 		"& \"%s\" -u \"%s\" %s", pyExecutable, converter.MainFile, converter.ExtraArgs,
 	))
 
-	println(fmt.Sprintf(
-		"Running: & \"%s\" -u \"%s\" %s", pyExecutable, converter.MainFile, converter.ExtraArgs,
-	))
-
 	mainStdout, err := mainRunCmd.StdoutPipe()
 	if err != nil {
-		log.Printf("Error creating stdout pipe: %v\n", err)
+		debugLog(fmt.Sprintf("Error creating stdout pipe: %v\n", err))
 	}
 
 	mainStdoutScanner := bufio.NewScanner(mainStdout)
 
 	mainSterr, err := mainRunCmd.StderrPipe()
 	if err != nil {
-		log.Printf("Error creating sterr pipe: %v\n", err)
+		debugLog(fmt.Sprintf("Error creating sterr pipe: %v\n", err))
 	}
 
 	mainStderrScanner := bufio.NewScanner(mainSterr)
 
 	if err := mainRunCmd.Start(); err != nil {
-		return fmt.Sprintf("error|%s failed to start with error %s", converter.Name, err.Error())
+		var r = fmt.Sprintf("error|%s failed to start with error %s", converter.Name, err.Error())
+		debugLog(r)
+		return r
 	}
 
 	for mainStdoutScanner.Scan() {
-		runtime.EventsEmit(a.ctx, "OUTPUT_CONVERTER_TEXT", mainStdoutScanner.Text())
-
+		var txt = mainStdoutScanner.Text()
+		debugLog(txt)
+		runtime.EventsEmit(a.ctx, "OUTPUT_CONVERTER_TEXT", txt)
 	}
 
 	for mainStderrScanner.Scan() {
-		runtime.EventsEmit(a.ctx, "OUTPUT_CONVERTER_TEXT", "ERR: "+mainStderrScanner.Text())
+		var txt = mainStderrScanner.Text()
+		debugLog(txt)
+		runtime.EventsEmit(a.ctx, "OUTPUT_CONVERTER_TEXT", "ERR: "+txt)
 	}
 
 	if err := mainRunCmd.Wait(); err != nil {
-		return fmt.Sprintf("error|%s completed with error %s", converter.Name, err.Error())
+		var r = fmt.Sprintf("error|%s completed with error %s", converter.Name, err.Error())
+		debugLog(r)
+		return r
 	}
 
 	var chdir2_err = os.Chdir(old_wd)
 	if chdir2_err != nil {
-		return fmt.Sprintf("error|Failed change directory with error %s", err.Error())
+		var r = fmt.Sprintf("error|Failed change directory with error %s", err.Error())
+		debugLog(r)
+		return r
 	}
 
 	var newOutputFolder = createFolderIfNeeded(filepath.Join(localFilesRootDirectory, "conversions",
@@ -210,9 +234,10 @@ func (a *App) ConvertMod(manifest map[string]interface{}, converterName string, 
 	var zipErr = zipFolder(modFolder, zipPath)
 
 	if zipErr != nil {
-		println("Failed to zip mod")
-		println(zipErr.Error())
+		debugLog("Failed to zip mod")
+		debugLog(zipErr.Error())
 	} else {
+		debugLog(fmt.Sprintf("Completed mod conversion to zip: %s", zipPath))
 		runtime.EventsEmit(a.ctx, "CONVERTER_MOD_DONE", zipPath)
 	}
 

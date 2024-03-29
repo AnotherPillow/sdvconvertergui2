@@ -17,6 +17,22 @@
         setConverters(objectToArray(data))
     })
 
+    window.runtime.EventsOn('UPDATE_CHECK_INFO', (data) => {
+        const { state, message } = data.data
+
+        if (state == 'none') return
+
+        const color = state == 'available' ? '#9B0A16' : '#997E16'
+
+        window.SendToast(
+            message,
+            state == 'available' ? 30000 : 15000,
+            200,
+            color,
+            'white'
+        )
+    })
+
     let _sendToast = null;
 
     $: {

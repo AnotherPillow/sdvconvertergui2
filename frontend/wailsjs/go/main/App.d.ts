@@ -5,6 +5,4 @@ export function ChooseManifest():Promise<{[key: string]: any}>;
 
 export function ConvertMod(arg1:{[key: string]: any},arg2:string,arg3:string):Promise<string>;
 
-export function Greet(arg1:string):Promise<string>;
-
 export function ShowFolderInExplorer(arg1:string):Promise<void>;

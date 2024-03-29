@@ -80,6 +80,7 @@ func getGameInstallDirectory() string {
 
 	for _, path := range paths {
 		if _, err := os.Stat(path); err == nil && path != "" {
+			debugLog(fmt.Sprintf("Game found in %s", path))
 			return path
 		}
 	}
@@ -169,6 +170,7 @@ func checkExists(path string) bool {
 
 // https://stackoverflow.com/a/33853856
 func downloadFile(filepath string, url string) (err error) {
+	debugLog("Downloading " + filepath + " from " + url)
 
 	// Create the file
 	out, err := os.Create(filepath)
@@ -199,6 +201,7 @@ func downloadFile(filepath string, url string) (err error) {
 }
 
 func checkGameVersion(gamepath string) string {
+	debugLog(fmt.Sprintf("Checking game version in %s", gamepath))
 	var doesExist = checkExists(filepath.Join(gamepath, "Content/Data/Objects.xnb"))
 	if doesExist {
 		return "1.6"
@@ -282,28 +285,28 @@ func extractSelfExtracing7z(src string, dest string) error {
 	for _, file := range r.File {
 		var destFolder = filepath.Join(dest, filepath.Dir(file.Name))
 		if !checkExists(destFolder) {
-			println("creating " + destFolder)
+			debugLog("creating " + destFolder)
 			e := os.MkdirAll(destFolder, os.ModePerm)
 			if e != nil {
-				println("failed to create folder " + destFolder + e.Error())
+				debugLog("failed to create folder " + destFolder + e.Error())
 			}
 		}
 		var destFilePath = filepath.Join(dest, file.Name)
-		// println(destFilePath)
+		// debugLog(destFilePath)
 
 		var rc, _ = file.Open()
 
 		dest, e := os.Create(destFilePath)
 
 		if e != nil {
-			println("Failed to create " + destFilePath + e.Error())
+			debugLog("Failed to create " + destFilePath + e.Error())
 		}
 
 		defer dest.Close()
 
 		_, e2 := io.Copy(dest, rc)
 		if e2 != nil {
-			println("Failed to copy file from git archive! " + e.Error())
+			debugLog("Failed to copy file from git archive! " + e.Error())
 		}
 
 		_ = rc.Close()
@@ -314,6 +317,7 @@ func extractSelfExtracing7z(src string, dest string) error {
 }
 
 func createFolderIfNeeded(fp string) string {
+	// debugLog(fmt.Sprintf("creating %s if needed", fp))
 	if !checkExists(fp) {
 		os.MkdirAll(fp, os.ModePerm)
 	}
@@ -326,7 +330,7 @@ func installPip() {
 	err := downloadFile(getpip, "https://bootstrap.pypa.io/get-pip.py")
 
 	if err != nil {
-		println("Failed to download pip: " + err.Error())
+		debugLog("Failed to download pip: " + err.Error())
 	}
 
 	var pipInstallCmd = runSimpleCommand(fmt.Sprintf("& \"%s\" \"%s\"",
@@ -334,11 +338,11 @@ func installPip() {
 	))
 
 	if err := pipInstallCmd.Start(); err != nil {
-		println("get-pip.py failed to start with error " + err.Error())
+		debugLog("get-pip.py failed to start with error " + err.Error())
 	}
 
 	if err := pipInstallCmd.Wait(); err != nil {
-		println("get-pip.py completed with error " + err.Error())
+		debugLog("get-pip.py completed with error " + err.Error())
 	}
 
 	var pthContent = []byte(`
@@ -353,9 +357,12 @@ python311.zip
 	os.WriteFile(filepath.Join(pythonFolderPath, "python311._pth"),
 		pthContent, os.ModePerm)
 
+	debugLog("Finished writing python311._pth file.")
+
 }
 
 func showFolder(path string) {
+	debugLog(fmt.Sprintf("Showing %s", path))
 	if runtime.GOOS == "windows" {
 		cmd := exec.Command(`explorer`, `/select,`, path)
 		_ = cmd.Start()
@@ -371,6 +378,7 @@ func showFolder(path string) {
 
 // https://gosamples.dev/zip-file/
 func zipFolder(source string, target string) error {
+	debugLog(fmt.Sprintf("zipping %s into %s", source, target))
 	// 1. Create a ZIP file and zip.Writer
 	f, err := os.Create(target)
 	if err != nil {
@@ -427,6 +435,7 @@ func zipFolder(source string, target string) error {
 }
 
 func updatePackageResolution(mf string) error {
+	debugLog(fmt.Sprintf("Updating %s for proper module resolution.", mf))
 	var text = `
 # --- START ADDED BY SDVCONVERTERGUI2 ---
 import os, sys

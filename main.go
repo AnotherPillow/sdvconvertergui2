@@ -14,39 +14,44 @@ import (
 var assets embed.FS
 
 func main() {
+	initDebugLogging()
 	rand.Seed(time.Now().UnixNano())
+	debugLog("Started application...")
 
 	createFolderIfNeeded(localFilesRootDirectory)
 
 	if !checkExists(pythonDownloadFilePath) {
-		println("Downloading python!")
+		debugLog("Downloading python.")
 		var err = downloadFile(pythonDownloadFilePath, pythonDownloadLink)
 		if err != nil {
-			println(err.Error())
-			println("Failed to download Python!")
+			debugLog("Failed to download Python! " + err.Error())
 			return
 		}
 
 		var e = extractZipFile(pythonDownloadFilePath, pythonFolderPath)
 		if e != nil {
-			println(e.Error())
-			println("Failed to extract Python!")
+			debugLog("Failed to extract Python! " + e.Error())
 			return
 		}
 
+		debugLog("Installing pip.")
 		installPip()
+	} else {
+		debugLog("Git already downloaded.")
 	}
 
 	if !checkExists(gitDownloadFilePath) {
-		println("Downloading git!")
+		debugLog("Downloading git!")
 		var err = downloadFile(gitDownloadFilePath, gitDownloadLink)
 		if err != nil {
-			println(err.Error())
+			debugLog("Failed to download Git! " + err.Error())
 		}
 		var e = extractSelfExtracing7z(gitDownloadFilePath, gitFolderPath)
 		if e != nil {
-			println(e.Error())
+			debugLog("Failed to extract Git! " + e.Error())
 		}
+	} else {
+		debugLog("Git already downloaded.")
 	}
 
 	// Create an instance of the app structure
@@ -69,7 +74,7 @@ func main() {
 	})
 
 	if err != nil {
-		println("Error:", err.Error())
+		debugLog("Failed to run/create wails app/window " + err.Error())
 	}
 
 }

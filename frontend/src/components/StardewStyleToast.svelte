@@ -4,17 +4,20 @@
     let transitionTime = 0;
     let toastContent = ''
     let toastBg = null;
+    let toastColour = null;
 
     export const SendToast = (
         message = 'This is a Toast!',
         time = 2000,
         fade = 100,
-        bg = 'wheat'
+        bg = 'wheat',
+        colour = 'black'
     ) => {
         _toastVisible = true;
         transitionTime = fade;
         toastContent = message
         toastBg = bg;
+        toastColour = colour
 
         setTimeout(() => {
             _toastVisible = false
@@ -26,7 +29,8 @@
 <div id="sdv-style-toast-container">
     <div id="sdv-style-toast" class={`${_toastVisible ? 'visible' : 'hidden'}`} style={
         `--fadeTime: ${transitionTime}ms; ` +
-        `--bg: ${toastBg ? toastBg : 'wheat'}; `
+        `--bg: ${toastBg ? toastBg : 'wheat'}; ` +
+        `--col: ${toastColour ? toastColour : 'black'}; ` 
     }>
         <h2 class="text-lg font-bold">{toastContent}</h2>
     </div>
@@ -60,8 +64,7 @@
             
             background-color: var(--bg);
             @include data.border_image(8px, "src");
-
-
+            
             // transition: all var(--fadeTime) linear;
             transition: right var(--fadeTime) linear;
 
@@ -77,6 +80,11 @@
                 right: -($width + 2em);
 
             }
+
+            h2 {
+                color: var(--col);
+            }
+            
         }
     }
 

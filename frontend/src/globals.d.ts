@@ -10,7 +10,9 @@ declare global {
             message: string,
             time: number,
             fade: number,
-            bg: string
+            bg?: string,
+            col?: string,
+
         ) => void
     }
 }
