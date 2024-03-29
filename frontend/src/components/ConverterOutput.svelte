@@ -30,7 +30,7 @@
         scrollbar-width: none;
         cursor: text;
         
-        @include data.border_image(8px, "..");
+        @include data.border_image(8px, "../");
         border-radius: 8px;
         
         background-color: rgb(200, 182, 147);

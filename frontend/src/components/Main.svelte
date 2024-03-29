@@ -147,7 +147,7 @@
             
             align-items: center;
 
-            @include data.border_image(12px, "..");
+            @include data.border_image(12px, "../");
         }
     }
 

@@ -39,7 +39,7 @@ func (a *App) DomReady(ctx context.Context) {
 	var updateState, updateMessage = checkForUpdate(a)
 	var updateType = ""
 
-	debugLog(fmt.Sprintf("Updatestate: %s, updatemessage: %s", updateState, updateMessage))
+	debugLog(fmt.Sprintf("Updatestate: %d, updatemessage: %s", updateState, updateMessage))
 
 	if updateState == 0 {
 		updateType = "none"

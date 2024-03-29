@@ -63,7 +63,7 @@
             height: 8em;
             
             background-color: var(--bg);
-            @include data.border_image(8px, "src");
+            @include data.border_image(8px, "../");
             
             // transition: all var(--fadeTime) linear;
             transition: right var(--fadeTime) linear;

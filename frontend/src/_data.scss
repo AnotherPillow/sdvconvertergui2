@@ -17,14 +17,14 @@ $sdv-dropdown-colour: #221122;
 @mixin border_image_side($width: 16px, $side: top) {
     border-#{$side}: $width solid transparent;
 
-    border-image: url('./assets/images/border-oneside.png') 16 round;
+    border-image: url('assets/images/border-oneside.png') 16 round;
     border-radius: $width;
 } 
 
-@mixin border_image($width: 16px, $path_start: ".") {
+@mixin border_image($width: 16px, $path_start: "") {
     border: $width solid transparent;
     
-    border-image: url('#{$path_start}/assets/images/border-oneside.png') 16 round;
+    border-image: url('#{$path_start}assets/images/border-oneside.png') 16 round;
     border-radius: 20px;
 }
 

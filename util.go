@@ -11,9 +11,7 @@ import (
 	"runtime"
 )
 
-const APP_VERSION = "1.1.0"
-
-// const APP_VERSION = "1.1.0"
+const APP_VERSION = "1.1.1"
 const APP_UNIQUEID = "fake.nexus.20986"
 const APP_UPDATEKEY = "Nexus:20986"
 
@@ -74,6 +72,8 @@ func sendPOST(url string, data interface{}) ([]map[string]interface{}, error) {
 		return nil, fmt.Errorf("error reading response body: %v", err)
 	}
 
+	debugLog(fmt.Sprintf("Response from %s with %s", url, string(responseBody)))
+
 	// Parse the JSON response array
 	var responseArray []map[string]interface{}
 	if err := json.Unmarshal(responseBody, &responseArray); err != nil {
@@ -87,7 +87,7 @@ func checkForUpdate(a *App) (int, string) {
 	reqMods := []map[string]interface{}{{
 		"id":               "fake.nexus.20986",
 		"updateKeys":       []string{"Nexus:20986"},
-		"installedVersion": "1.0.0",
+		"installedVersion": APP_VERSION,
 	}}
 	reqData := map[string]interface{}{
 		"mods":       reqMods,
@@ -99,7 +99,9 @@ func checkForUpdate(a *App) (int, string) {
 		return 2, "Failed to check for an update."
 	} else if len(updates) == 0 {
 		return 0, "No update available."
-	} else {
+	} else if updates[0]["suggestedUpdate"] != nil {
 		return 1, fmt.Sprintf("There is a new update - %s - available. ", updates[0]["suggestedUpdate"].(map[string]interface{})["version"].(string))
+	} else {
+		return 0, "No update available."
 	}
 }

@@ -13,14 +13,14 @@ var logDirectory = createFolderIfNeeded(filepath.Join(getLocalFilesRootDirectory
 func generateLogFilename() string {
 	var now = time.Now()
 
-	var name = fmt.Sprintf("%s %s.log", now.Format("01-01-20 01-01-01"), randomString(4))
+	var name = fmt.Sprintf("%s %s.log", now.Format("02-01-06 15;04;05"), randomString(4))
 
 	return name
 }
 
 func getCurrentTime() string {
 	var now = time.Now()
-	return now.Format("20:20:20")
+	return now.Format("15;04;05")
 }
 
 var logFilename = generateLogFilename()

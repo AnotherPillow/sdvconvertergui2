@@ -17,6 +17,7 @@ func main() {
 	initDebugLogging()
 	rand.Seed(time.Now().UnixNano())
 	debugLog("Started application...")
+	debugLog("Application version: " + APP_VERSION)
 
 	createFolderIfNeeded(localFilesRootDirectory)
 
@@ -37,7 +38,7 @@ func main() {
 		debugLog("Installing pip.")
 		installPip()
 	} else {
-		debugLog("Git already downloaded.")
+		debugLog("Python already downloaded.")
 	}
 
 	if !checkExists(gitDownloadFilePath) {
@@ -59,7 +60,7 @@ func main() {
 
 	// Create application with options
 	err := wails.Run(&options.App{
-		Title:  "sdvconvertergui2",
+		Title:  "sdvconvertergui2 " + APP_VERSION,
 		Width:  1024,
 		Height: 768,
 		AssetServer: &assetserver.Options{
