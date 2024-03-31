@@ -113,6 +113,7 @@ func (a *App) ConvertMod(manifest map[string]interface{}, converterName string, 
 
 	var modFolder = filepath.Dir(manifestPath)
 	var inputFolder = createFolderIfNeeded(filepath.Join(downloadDir, converter.InputDirectory))
+	var outputFolder = createFolderIfNeeded(filepath.Join(downloadDir, converter.OutputDirectory))
 
 	err := updatePackageResolution(filepath.Join(downloadDir, converter.MainFile))
 	if err != nil {
@@ -228,10 +229,10 @@ func (a *App) ConvertMod(manifest map[string]interface{}, converterName string, 
 
 	showFolder(newOutputFolder)
 
-	_ = cp.Copy(modFolder, newOutputFolder)
+	_ = cp.Copy(outputFolder, newOutputFolder)
 
 	var zipPath = newOutputFolder + ".zip"
-	var zipErr = zipFolder(modFolder, zipPath)
+	var zipErr = zipFolder(outputFolder, zipPath)
 
 	if zipErr != nil {
 		debugLog("Failed to zip mod")
