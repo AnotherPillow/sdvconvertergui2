@@ -133,6 +133,19 @@ var CP2AT = Converter{
 	ExtraArgs:         "",
 }
 
+var CPA2SC = Converter{
+	Name:              "CPA2SC",
+	Needs16:           false,
+	Repo:              "https://github.com/AnotherPillow/CPA2SC",
+	GitFile:           "https://github.com/AnotherPillow/CPA2SC.git",
+	InputDirectory:    "input",
+	OutputDirectory:   "output",
+	MainFile:          "main.py",
+	RequirementsFile:  "requirements.txt",
+	SupportedUniqueID: "pathoschild.contentpatcher",
+	ExtraArgs:         "",
+}
+
 var ConvertersMap = map[string]Converter{
 	"TMXL2CP":            TMXL2CP,
 	"BFAV2CP":            BFAV2CP,
@@ -140,4 +153,5 @@ var ConvertersMap = map[string]Converter{
 	"STF2CP":             STF2CP,
 	"FurnitureConverter": FurnitureConverter,
 	"CP2AT":              CP2AT,
+	"CPA2SC":             CPA2SC,
 }

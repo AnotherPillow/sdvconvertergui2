@@ -31,6 +31,7 @@ I could not find portable Python and Git releases for them.
 - [STF2CP](https://github.com/AnotherPillow/STF2CP) by AnotherPillow
 - [FurnitureConverter](https://github.com/elizabethcd/FurnitureConverter) by elizabethcd
 - [CP2AT](https://github.com/holy-the-sea/CP2AT) by holy-the-sea
+- [CPA2SC](https://github.com/holy-the-sea/CPA2SC) by AnotherPillow
 
 ## Attribution
 

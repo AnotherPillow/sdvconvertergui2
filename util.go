@@ -11,7 +11,7 @@ import (
 	"runtime"
 )
 
-const APP_VERSION = "1.1.2"
+const APP_VERSION = "1.2.0"
 const APP_UNIQUEID = "fake.nexus.20986"
 const APP_UPDATEKEY = "Nexus:20986"
 

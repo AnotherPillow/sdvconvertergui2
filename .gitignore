@@ -3,5 +3,7 @@ node_modules/
 frontend/dist
 
 vite.config.js.timestamp*
+*.syso
+
 testmods/
 test.go
