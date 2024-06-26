@@ -146,6 +146,32 @@ var CPA2SC = Converter{
 	ExtraArgs:         "",
 }
 
+var SAAT2CP = Converter{
+	Name:              "SAAT2CP",
+	Needs16:           false,
+	Repo:              "https://github.com/AnotherPillow/SAAT2CP",
+	GitFile:           "https://github.com/AnotherPillow/SAAT2CP.git",
+	InputDirectory:    "input",
+	OutputDirectory:   "output",
+	MainFile:          "main.py",
+	RequirementsFile:  "requirements.txt",
+	SupportedUniqueID: "zerometers.saat.mod",
+	ExtraArgs:         "",
+}
+
+var MTN2CP = Converter{
+	Name:              "SAAT2CP",
+	Needs16:           false,
+	Repo:              "https://github.com/AnotherPillow/MTN2CP",
+	GitFile:           "https://github.com/AnotherPillow/MTN2CP.git",
+	InputDirectory:    "input",
+	OutputDirectory:   "output",
+	MainFile:          "main.py",
+	RequirementsFile:  "requirements.txt",
+	SupportedUniqueID: "sgtpickles.mtn",
+	ExtraArgs:         "",
+}
+
 var ConvertersMap = map[string]Converter{
 	"TMXL2CP":            TMXL2CP,
 	"BFAV2CP":            BFAV2CP,
@@ -154,4 +180,6 @@ var ConvertersMap = map[string]Converter{
 	"FurnitureConverter": FurnitureConverter,
 	"CP2AT":              CP2AT,
 	"CPA2SC":             CPA2SC,
+	"SAAT2CP":            SAAT2CP,
+	"MTN2CP":             MTN2CP,
 }

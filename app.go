@@ -77,6 +77,8 @@ func (a *App) ChooseManifest() map[string]interface{} {
 		}
 	}
 
+	debugLog(fmt.Sprintf("Chose %s / Manifest: <<%s>>", filename, string(manifest)))
+
 	return map[string]interface{}{
 		"filename": filename,
 		"content":  string(manifest),
