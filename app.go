@@ -3,6 +3,7 @@ package main
 import (
 	"bufio"
 	"context"
+	"errors"
 	"fmt"
 	"os"
 	"path/filepath"
@@ -99,6 +100,11 @@ func (a *App) ConvertMod(manifest map[string]interface{}, converterName string, 
 
 	debugLog(converter.GitFile)
 	runtime.EventsEmit(a.ctx, "OUTPUT_CONVERTER_TEXT", fmt.Sprintf("[GUI] Cloning %s", converter.Name))
+
+	if _, err := os.Stat(gitExecutable); errors.Is(err, os.ErrNotExist) {
+		debugLog(fmt.Sprintf("%s is not found. (ConvertMod)", gitExecutable))
+		return "error|Git is not installed! Try restart the prorgam."
+	}
 
 	var gitCloneCmd = runSimpleCommand(fmt.Sprintf(
 		"& \"%s\" clone %s \"%s\" --recurse-submodules", gitExecutable, converter.GitFile, downloadDir,
