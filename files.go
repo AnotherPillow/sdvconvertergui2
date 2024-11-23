@@ -125,16 +125,32 @@ func getGitDownloadLink() string {
 	}
 }
 
+func getNodeDownloadLink() string {
+	if runtime.GOOS == "windows" {
+		return "https://nodejs.org/download/release/v22.11.0/node-v22.11.0-win-x64.zip"
+	} else if runtime.GOOS == "darwin" {
+		// TODO: Implement it
+		return "https://nodejs.org/download/release/v22.11.0/node-v22.11.0-darwin-x64.tar.gz"
+		// though the arm macs are https://nodejs.org/download/release/v22.11.0/node-v22.11.0-darwin-arm64.tar.gz
+	} else {
+		// TODO: Implement it
+		return "https://nodejs.org/download/release/v22.11.0/node-v22.11.0-linux-x64.tar.gz"
+	}
+}
+
 var localFilesRootDirectory = getLocalFilesRootDirectory()
 
 var gitDownloadLink = getGitDownloadLink()
 var pythonDownloadLink = getPythonDownloadLink()
+var nodeDownloadLink = getNodeDownloadLink()
 
 var gitDownloadFilePath = filepath.Join(localFilesRootDirectory, "PortableGit-2.44.0-64-bit.7z.exe")
 var pythonDownloadFilePath = filepath.Join(localFilesRootDirectory, "python-3.11.8-embed-amd64.zip")
+var nodeDownloadFilePath = filepath.Join(localFilesRootDirectory, "node-v22.11.0-win-x64.zip")
 
 var gitFolderPath = filepath.Join(localFilesRootDirectory, "git")
 var pythonFolderPath = filepath.Join(localFilesRootDirectory, "python-311")
+var nodeFolderPath = filepath.Join(localFilesRootDirectory, "node-v2211")
 
 func getPythonExecutable() string {
 	if runtime.GOOS == "windows" {
@@ -160,8 +176,34 @@ func getGitExecutable() string {
 	}
 }
 
+func getNodeExecutable() string {
+	if runtime.GOOS == "windows" { //      there's a folder inside the zip
+		return filepath.Join(nodeFolderPath, "node-v22.11.0-win-x64", "node.exe")
+	} else if runtime.GOOS == "darwin" {
+		// TODO
+		return ""
+	} else {
+		// TODO
+		return ""
+	}
+}
+
+func getNPMExecutable() string {
+	if runtime.GOOS == "windows" { //      there's a folder inside the zip
+		return filepath.Join(nodeFolderPath, "node-v22.11.0-win-x64", "npm.cmd")
+	} else if runtime.GOOS == "darwin" {
+		// TODO
+		return ""
+	} else {
+		// TODO
+		return ""
+	}
+}
+
 var pyExecutable = getPythonExecutable()
 var gitExecutable = getGitExecutable()
+var nodeExecutable = getNodeExecutable()
+var npmExecutable = getNPMExecutable()
 
 func checkExists(path string) bool {
 	_, error := os.Stat(path)

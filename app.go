@@ -6,6 +6,7 @@ import (
 	"errors"
 	"fmt"
 	"os"
+	"os/exec"
 	"path/filepath"
 	"strings"
 
@@ -88,9 +89,11 @@ func (a *App) ChooseManifest() map[string]interface{} {
 
 func (a *App) ConvertMod(manifest map[string]interface{}, converterName string, manifestPath string) string {
 	var converter = ConvertersMap[converterName]
+	debugLog("converting mod using " + converter.Name)
 	if !CheckCompatibleGame(converter) {
 		return "error|This converter is not compatible with your game install!"
 	}
+
 	if !converter.SupportsManifest(manifest["content"].(map[string]interface{})) {
 		return "error|This converter is not compatible with this content pack!"
 	}
@@ -119,15 +122,19 @@ func (a *App) ConvertMod(manifest map[string]interface{}, converterName string, 
 		return "error|git clone completed with error " + err.Error()
 	}
 
+	// time.Sleep(30 * time.Second) // pause for debugging.
+
 	var modFolder = filepath.Dir(manifestPath)
 	var inputFolder = createFolderIfNeeded(filepath.Join(downloadDir, converter.InputDirectory))
 	var outputFolder = createFolderIfNeeded(filepath.Join(downloadDir, converter.OutputDirectory))
 
-	err := updatePackageResolution(filepath.Join(downloadDir, converter.MainFile))
-	if err != nil {
-		debugLog(fmt.Sprintf("failed to update package resolution %s", err.Error()))
+	if converter.IsPython {
+		err := updatePackageResolution(filepath.Join(downloadDir, converter.MainFile))
+		if err != nil {
+			debugLog(fmt.Sprintf("failed to update package resolution %s", err.Error()))
 
-		return fmt.Sprintf("error|Failed change directory with error %s", err.Error())
+			return fmt.Sprintf("error|Failed change directory with error %s", err.Error())
+		}
 	}
 
 	runtime.EventsEmit(a.ctx, "OUTPUT_CONVERTER_TEXT", fmt.Sprintf("[GUI] Copying %s to input directory",
@@ -136,13 +143,26 @@ func (a *App) ConvertMod(manifest map[string]interface{}, converterName string, 
 
 	runtime.EventsEmit(a.ctx, "OUTPUT_CONVERTER_TEXT", "[GUI] Installing dependencies...")
 
-	var reqsCmd = runSimpleCommand(fmt.Sprintf(
-		"& \"%s\" -m pip install -r \"%s\"", pyExecutable, filepath.Join(downloadDir, converter.RequirementsFile),
-	))
+	var reqsCmd *exec.Cmd
+	if converter.IsPython {
+		reqsCmd = runSimpleCommand(fmt.Sprintf(
+			"& \"%s\" -m pip install -r \"%s\"", pyExecutable, filepath.Join(downloadDir, converter.RequirementsFile),
+		))
+	} else if converter.Name == "Convert To Fashion Sense JA ONLY" {
+		reqsCmd = runSimpleCommand(fmt.Sprintf(
+			"& \"%s\" install", npmExecutable,
+		))
+		reqsCmd.Dir = downloadDir
+	}
 
 	reqsStdout, err := reqsCmd.StdoutPipe()
 	if err != nil {
 		debugLog(fmt.Sprintf("Error creating stdout pipe: %v\n", err))
+	}
+
+	reqsSterr, err := reqsCmd.StderrPipe()
+	if err != nil {
+		debugLog(fmt.Sprintf("Error creating stderr pipe: %v\n", err))
 	}
 
 	if err := reqsCmd.Start(); err != nil {
@@ -151,13 +171,17 @@ func (a *App) ConvertMod(manifest map[string]interface{}, converterName string, 
 		return r
 	}
 
-	reqsScanner := bufio.NewScanner(reqsStdout)
+	reqsOutScanner := bufio.NewScanner(reqsStdout)
+	reqsErrScanner := bufio.NewScanner(reqsSterr)
 
-	for reqsScanner.Scan() {
-		debugLog(reqsScanner.Text())
-		if strings.Contains(reqsScanner.Text(), "Successfully installed") {
-			runtime.EventsEmit(a.ctx, "OUTPUT_CONVERTER_TEXT", "[GUI] "+reqsScanner.Text())
+	for reqsOutScanner.Scan() {
+		debugLog("stdout:" + reqsOutScanner.Text())
+		if strings.Contains(reqsOutScanner.Text(), "Successfully installed") {
+			runtime.EventsEmit(a.ctx, "OUTPUT_CONVERTER_TEXT", "[GUI] "+reqsOutScanner.Text())
 		}
+	}
+	for reqsErrScanner.Scan() {
+		debugLog("stderr:" + reqsErrScanner.Text())
 	}
 
 	converter.ModifyConfig(filepath.Join(downloadDir, "config.json"))
@@ -180,9 +204,30 @@ func (a *App) ConvertMod(manifest map[string]interface{}, converterName string, 
 	wd, wde := os.Getwd()
 	debugLog(fmt.Sprintf("PWD: %s - possible err %s", wd, wde))
 
-	var mainRunCmd = runSimpleCommand(fmt.Sprintf(
-		"& \"%s\" -u \"%s\" %s", pyExecutable, converter.MainFile, converter.ExtraArgs,
-	))
+	var mainRunCmd *exec.Cmd
+	if converter.IsPython {
+		mainRunCmd = runSimpleCommand(fmt.Sprintf(
+			"& \"%s\" -u \"%s\" %s", pyExecutable, converter.MainFile, converter.ExtraArgs,
+		))
+	} else if converter.Name == "Convert To Fashion Sense JA ONLY" {
+		var conversionType string
+		if checkExists(filepath.Join(modFolder, "Hats")) {
+			debugLog("converter type hats")
+			conversionType = "hat"
+		} else if checkExists(filepath.Join(modFolder, "Shirts")) {
+			debugLog("converter type shirts")
+			conversionType = "shirt"
+		} else {
+			debugLog("converter type failed to find type. just will ignore and hope it works")
+		}
+
+		var authorName = manifest["content"].(map[string]interface{})["Author"].(string)
+
+		mainRunCmd = runSimpleCommand(fmt.Sprintf(
+			"& \"%s\" %s --conversionType=%s --authorName=%s", nodeExecutable, converter.MainFile, conversionType, authorName,
+		))
+		mainRunCmd.Dir = downloadDir
+	}
 
 	mainStdout, err := mainRunCmd.StdoutPipe()
 	if err != nil {
@@ -258,4 +303,8 @@ func (a *App) ConvertMod(manifest map[string]interface{}, converterName string, 
 
 func (a *App) ShowFolderInExplorer(path string) {
 	showFolder(path)
+}
+
+func (a *App) ShowDebugLogsFolder() {
+	showFolder(logDirectory)
 }

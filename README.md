@@ -34,6 +34,7 @@ I could not find portable Python and Git releases for them.
 - [CPA2SC](https://github.com/AnotherPillow/CPA2SC) by AnotherPillow
 - [SAAT2CP](https://github.com/AnotherPillow/SAAT2CP) by AnotherPillow
 - [MTN2CP](https://github.com/AnotherPillow/MTN2CP) by AnotherPillow
+- [stardew-convert-to-fashion-sense](https://github.com/bikinavisho/stardew-convert-to-fashion-sense) by bikinavisho
 
 ## Attribution
 

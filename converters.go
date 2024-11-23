@@ -28,6 +28,7 @@ type Converter struct {
 	RequirementsFile  string
 	SupportedUniqueID string
 	ExtraArgs         string
+	IsPython          bool
 }
 
 func (c Converter) ModifyConfig(configPath string) {
@@ -44,16 +45,9 @@ func (c Converter) ModifyConfig(configPath string) {
 func (c Converter) SupportsManifest(manifest map[string]interface{}) bool {
 	var contentPackFor = manifest["ContentPackFor"].(map[string]interface{})["UniqueID"].(string)
 
+	debugLog(fmt.Sprintf("checking if CPF %s is compatible with UID %s", contentPackFor, c.SupportedUniqueID))
 	return strings.ToLower(contentPackFor) == strings.ToLower(c.SupportedUniqueID)
 }
-
-// https://github.com/AnotherPillow/TMXL2CP
-// https://github.com/AnotherPillow/BFAV2CP
-// https://github.com/AnotherPillow/CM2CP
-// https://github.com/AnotherPillow/STF2CP
-// https://github.com/elizabethcd/FurnitureConverter
-// https://github.com/elizabethcd/SkirtConverter
-// https://github.com/holy-the-sea/CP2AT
 
 var TMXL2CP = Converter{
 	Name:              "TMXL2CP",
@@ -66,6 +60,7 @@ var TMXL2CP = Converter{
 	RequirementsFile:  "requirements.txt",
 	SupportedUniqueID: "platonymous.tmxloader",
 	ExtraArgs:         "",
+	IsPython:          true,
 }
 
 var BFAV2CP = Converter{
@@ -79,6 +74,7 @@ var BFAV2CP = Converter{
 	RequirementsFile:  "requirements.txt",
 	SupportedUniqueID: "paritee.betterfarmanimalvariety",
 	ExtraArgs:         "",
+	IsPython:          true,
 }
 
 var CM2CP = Converter{
@@ -92,6 +88,7 @@ var CM2CP = Converter{
 	RequirementsFile:  "requirements.txt",
 	SupportedUniqueID: "platonymous.custommusic",
 	ExtraArgs:         "",
+	IsPython:          true,
 }
 
 var STF2CP = Converter{
@@ -105,6 +102,7 @@ var STF2CP = Converter{
 	RequirementsFile:  "requirements.txt",
 	SupportedUniqueID: "cherry.shoptileframework",
 	ExtraArgs:         "",
+	IsPython:          true,
 }
 
 var FurnitureConverter = Converter{
@@ -118,6 +116,7 @@ var FurnitureConverter = Converter{
 	RequirementsFile:  "requirements.txt",
 	SupportedUniqueID: "platonymous.customfurniture",
 	ExtraArgs:         "--inputDir input --outputDir output",
+	IsPython:          true,
 }
 
 var CP2AT = Converter{
@@ -131,6 +130,7 @@ var CP2AT = Converter{
 	RequirementsFile:  "requirements.txt",
 	SupportedUniqueID: "pathoschild.contentpatcher",
 	ExtraArgs:         "",
+	IsPython:          true,
 }
 
 var CPA2SC = Converter{
@@ -144,6 +144,7 @@ var CPA2SC = Converter{
 	RequirementsFile:  "requirements.txt",
 	SupportedUniqueID: "pathoschild.contentpatcher",
 	ExtraArgs:         "",
+	IsPython:          true,
 }
 
 var SAAT2CP = Converter{
@@ -157,6 +158,7 @@ var SAAT2CP = Converter{
 	RequirementsFile:  "requirements.txt",
 	SupportedUniqueID: "zerometers.saat.mod",
 	ExtraArgs:         "",
+	IsPython:          true,
 }
 
 var MTN2CP = Converter{
@@ -170,16 +172,32 @@ var MTN2CP = Converter{
 	RequirementsFile:  "requirements.txt",
 	SupportedUniqueID: "sgtpickles.mtn",
 	ExtraArgs:         "",
+	IsPython:          true,
+}
+
+var ConvertToFashionSenseJsonAssets = Converter{
+	Name:              "Convert To Fashion Sense JA ONLY",
+	Needs16:           false,
+	Repo:              "https://github.com/anotherpillow/stardew-convert-to-fashion-sense",
+	GitFile:           "https://github.com/anotherpillow/stardew-convert-to-fashion-sense.git",
+	InputDirectory:    "input",
+	OutputDirectory:   "output",
+	MainFile:          "index.js",
+	RequirementsFile:  "",
+	SupportedUniqueID: "spacechase0.jsonassets",
+	ExtraArgs:         "",
+	IsPython:          false,
 }
 
 var ConvertersMap = map[string]Converter{
-	"TMXL2CP":            TMXL2CP,
-	"BFAV2CP":            BFAV2CP,
-	"CM2CP":              CM2CP,
-	"STF2CP":             STF2CP,
-	"FurnitureConverter": FurnitureConverter,
-	"CP2AT":              CP2AT,
-	"CPA2SC":             CPA2SC,
-	"SAAT2CP":            SAAT2CP,
-	"MTN2CP":             MTN2CP,
+	"TMXL2CP":                          TMXL2CP,
+	"BFAV2CP":                          BFAV2CP,
+	"CM2CP":                            CM2CP,
+	"STF2CP":                           STF2CP,
+	"FurnitureConverter":               FurnitureConverter,
+	"CP2AT":                            CP2AT,
+	"CPA2SC":                           CPA2SC,
+	"SAAT2CP":                          SAAT2CP,
+	"MTN2CP":                           MTN2CP,
+	"Convert To Fashion Sense JA ONLY": ConvertToFashionSenseJsonAssets,
 }

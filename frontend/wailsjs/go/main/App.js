@@ -10,6 +10,10 @@ export function ConvertMod(arg1, arg2, arg3) {
   return window['go']['main']['App']['ConvertMod'](arg1, arg2, arg3);
 }
 
+export function ShowDebugLogsFolder() {
+  return window['go']['main']['App']['ShowDebugLogsFolder']();
+}
+
 export function ShowFolderInExplorer(arg1) {
   return window['go']['main']['App']['ShowFolderInExplorer'](arg1);
 }

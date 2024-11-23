@@ -55,6 +55,21 @@ func main() {
 		debugLog("Git already downloaded.")
 	}
 
+	if !checkExists(nodeDownloadFilePath) {
+		debugLog("Downloading Node!")
+		var err = downloadFile(nodeDownloadFilePath, nodeDownloadLink)
+		if err != nil {
+			debugLog("Failed to download Node! " + err.Error())
+		}
+		var e = extractZipFile(nodeDownloadFilePath, nodeFolderPath)
+		if e != nil {
+			debugLog("Failed to extract Node! " + e.Error())
+			return
+		}
+	} else {
+		debugLog("Node already downloaded.")
+	}
+
 	// Create an instance of the app structure
 	app := NewApp()
 

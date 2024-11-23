@@ -2,9 +2,12 @@
     import Blurrer from './components/Blurrer.svelte';
     import Main from './components/Main.svelte';
     import StardewStyleToast from './components/StardewStyleToast.svelte';
+    import logBtn from './assets/images/log_btn.png';
 
     import { converters, setConverters } from './stores'
     import { objectToArray } from './util';
+    import { ShowDebugLogsFolder } from '../wailsjs/go/main/App.js'
+
 
 
     window.runtime.EventsOnce('DOM_READY', (data) => {
@@ -47,6 +50,12 @@
     <Main />
 </main>
 
+<button 
+    id="logs-btn"
+    on:click={ShowDebugLogsFolder}>
+    <img src={logBtn} alt="open logs" />
+</button>
+
 <style lang="scss">
     @use "data";
 
@@ -61,8 +70,26 @@
         padding: 30px;
 
         @include data.border_image;
+    }
 
+    #logs-btn {
+        img {
+            width: 1.5em;
+            height: 1.5em;
+        }
+        z-index: 2;
+        padding: 0.25em;
 
+        background-color: wheat;
+        @include data.border_image(8px);
+
+        position: absolute;
+        bottom: 8px;
+        left: 8px;
+
+        &:hover {
+            filter: brightness(0.8);
+        }
     }
 
 </style>
