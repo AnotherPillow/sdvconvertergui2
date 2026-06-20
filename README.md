@@ -1,3 +1,9 @@
+# THIS IS DEPRECATED
+
+## PLEASE USE [sdvconvertergui3](https://github.com/anotherpillow/sdvconvertergui3) INSTEAD, UNLESS YOU NEED A CONVERTER IT DOES NOT SUPPORT
+
+https://github.com/anotherpillow/sdvconvertergui3
+
 <p align="center">
     <image src="readme-assets/icon-256x.png">
     <h1>sdvconvertergui2</h1>
